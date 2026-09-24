@@ -12,6 +12,7 @@ from app.routes.question_routes import question_bp
 from app.routes.quiz_routes import quiz_bp
 from app.routes.game_session_routes import game_session_bp
 from app.routes.ai_test_routes import ai_test_bp
+from app.routes.companion_routes import companion_bp
 from app.middleware.error_handler import register_error_handlers
 
 
@@ -74,6 +75,11 @@ def create_app():
     app.register_blueprint(
         ai_test_bp,
         url_prefix="/api/ai"
+    )
+
+    app.register_blueprint(
+        companion_bp,
+        url_prefix="/api/companion"
     )
 
     @app.route("/api/health", methods=["GET"])

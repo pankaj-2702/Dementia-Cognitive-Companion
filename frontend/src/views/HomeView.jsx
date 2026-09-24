@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { BellIcon, PillIcon, ArrowRightIcon, CheckIcon } from '../components/Icons';
-import { Sun, Brain } from 'lucide-react';
+import { Sun, Brain, Mic, Bot } from 'lucide-react';
 
 export function HomeView({
   patient,
   nextReminder,
   onStartQuiz,
   onCompleteReminder,
-  onViewMemories
+  onViewMemories,
+  onOpenCompanion
 }) {
   const [reminderDone, setReminderDone] = useState(nextReminder?.completed || false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -38,6 +39,45 @@ export function HomeView({
           <Sun size={26} color="#F59E0B" style={{ display: 'inline-block', verticalAlign: '-4px', marginLeft: 4 }} />
         </h1>
         <p className="greeting-sub">A brighter day for a healthier you.</p>
+      </section>
+
+      {/* Voice Companion Card */}
+      <section
+        onClick={onOpenCompanion}
+        className="smriti-card card-companion clickable"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === 'Enter' && onOpenCompanion && onOpenCompanion()}
+        aria-label="Talk with Smriti Companion"
+      >
+        <div className="card-companion-content">
+          <span className="card-tag tag-companion">VOICE AI COMPANION</span>
+          <h2 className="card-title title-companion">
+            Talk with<br />Smriti
+          </h2>
+          <p className="card-sub sub-companion">
+            Gentle conversations, memories & voice companionship
+          </p>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onOpenCompanion) onOpenCompanion();
+            }}
+            className="card-btn btn-companion"
+            aria-label="Start Voice Conversation"
+          >
+            <Mic size={18} className="btn-mic-icon" />
+            <span>Talk Now</span>
+          </button>
+        </div>
+
+        <div className="card-companion-mascot-wrapper">
+          <div className="companion-mascot-circle">
+            <Bot size={44} color="#047857" />
+          </div>
+        </div>
       </section>
 
       {/* 2. Card 1: Active Mind Game Card */}

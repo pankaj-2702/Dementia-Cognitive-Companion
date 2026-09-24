@@ -503,5 +503,33 @@ export const api = {
     } catch {
       return [];
     }
+  },
+
+  // Voice AI Companion API
+  sendCompanionMessage: async ({ conversationId, message, language = 'en-IN' }) => {
+    return await fetchWithAuth(`${API_BASE}/companion/message`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conversation_id: conversationId,
+        message,
+        language
+      })
+    });
+  },
+
+  getCompanionConversation: async (conversationId) => {
+    return await fetchWithAuth(`${API_BASE}/companion/conversations/${conversationId}`);
+  },
+
+  createCompanionConversation: async (language = 'en-IN') => {
+    return await fetchWithAuth(`${API_BASE}/companion/conversations`, {
+      method: 'POST',
+      body: JSON.stringify({ language })
+    });
+  },
+
+  getCompanionConversations: async () => {
+    return await fetchWithAuth(`${API_BASE}/companion/conversations`);
   }
 };
+

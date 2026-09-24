@@ -9,6 +9,7 @@ import { MemoriesView } from './views/MemoriesView';
 import { ProfileView } from './views/ProfileView';
 import { AuthView } from './views/AuthView';
 import { CaregiverView } from './views/CaregiverView';
+import { CompanionView } from './views/CompanionView';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import {
   api,
@@ -345,7 +346,7 @@ export function App() {
           </div>
 
           {/* Dynamic Content Scroll Area - Internal Vertical Scroll */}
-          <div className={`app-content-scroll ${currentUser && currentUser.role !== 'caregiver' && !inQuizMode ? 'has-bottom-nav' : 'no-bottom-nav'}`}>
+          <div className={`app-content-scroll ${currentUser && currentUser.role !== 'caregiver' && !inQuizMode && activeTab !== 'companion' ? 'has-bottom-nav' : 'no-bottom-nav'}`}>
             {/* 1. If not logged in, render AuthView (Login & Register) */}
             {!currentUser ? (
               <AuthView onAuthSuccess={handleAuthSuccess} />
@@ -366,8 +367,14 @@ export function App() {
                 onBack={() => setInQuizMode(false)}
                 onCompleteQuiz={handleCompleteQuiz}
               />
+            ) : activeTab === 'companion' ? (
+              /* 4. SmritiRoots Voice AI Companion */
+              <CompanionView
+                patient={patient}
+                onBack={() => setActiveTab('home')}
+              />
             ) : (
-              /* 4. Elder / Patient Mobile Dashboard */
+              /* 5. Elder / Patient Mobile Dashboard */
               <>
                 {/* Standard Brand Header */}
                 <Header
@@ -380,6 +387,7 @@ export function App() {
                   <HomeView
                     patient={patient}
                     nextReminder={nextReminder}
+                    onOpenCompanion={() => setActiveTab('companion')}
                     onStartQuiz={() => {
                       startQuizForGame(games[0] || { id: 'brain-boost', name: 'Brain Boost' });
                     }}
@@ -433,7 +441,7 @@ export function App() {
           </div>
 
           {/* Bottom Navigation Dock (Visible on main tabs for patient, hidden for caregiver & quiz) */}
-          {currentUser && currentUser.role !== 'caregiver' && !inQuizMode && (
+          {currentUser && currentUser.role !== 'caregiver' && !inQuizMode && activeTab !== 'companion' && (
             <BottomNav
               activeTab={activeTab}
               onTabChange={(tab) => {

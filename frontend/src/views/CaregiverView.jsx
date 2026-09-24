@@ -215,7 +215,7 @@ export function CaregiverView({ currentUser, onLogout }) {
       };
 
       await api.updatePatient(selectedPatientId, updates);
-      setActionSuccess('Patient profile updated successfully in MongoDB!');
+      setActionSuccess('Patient profile updated successfully!');
 
       // Refresh dashboard
       const updated = await api.getCaregiverDashboard(selectedPatientId);
@@ -906,15 +906,16 @@ export function CaregiverView({ currentUser, onLogout }) {
                           />
                         </div>
 
-                        <button
-                          type="submit"
-                          disabled={isSubmitting}
-                          className="card-btn btn-primary"
-                          style={{ maxWidth: 280, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-                        >
-                          <span>{isSubmitting ? 'Saving to Database...' : 'Save Patient Profile'}</span>
-                          <Check size={16} />
-                        </button>
+                        <div className="form-submit-row">
+                          <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="form-submit-btn"
+                          >
+                            <Check size={16} />
+                            <span>{isSubmitting ? 'Saving to Database...' : 'Save Patient Profile'}</span>
+                          </button>
+                        </div>
                       </form>
                     </div>
                   </div>
@@ -973,15 +974,16 @@ export function CaregiverView({ currentUser, onLogout }) {
                           </div>
                         </div>
 
-                        <button
-                          type="submit"
-                          disabled={isSubmitting}
-                          className="card-btn btn-primary"
-                          style={{ maxWidth: 240, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-                        >
-                          <Plus size={16} />
-                          <span>{isSubmitting ? 'Scheduling...' : 'Schedule Reminder'}</span>
-                        </button>
+                        <div className="form-submit-row">
+                          <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="form-submit-btn"
+                          >
+                            <Plus size={16} />
+                            <span>{isSubmitting ? 'Scheduling...' : 'Schedule Reminder'}</span>
+                          </button>
+                        </div>
                       </form>
                     </div>
 
@@ -1100,15 +1102,16 @@ export function CaregiverView({ currentUser, onLogout }) {
                           />
                         </div>
 
-                        <button
-                          type="submit"
-                          disabled={isSubmitting}
-                          className="card-btn btn-primary"
-                          style={{ maxWidth: 240, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-                        >
-                          <ImagePlus size={16} />
-                          <span>{isSubmitting ? 'Saving Memory...' : 'Save to Memories'}</span>
-                        </button>
+                        <div className="form-submit-row">
+                          <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="form-submit-btn"
+                          >
+                            <ImagePlus size={16} />
+                            <span>{isSubmitting ? 'Saving Memory...' : 'Save to Memories'}</span>
+                          </button>
+                        </div>
                       </form>
                     </div>
 
@@ -1316,9 +1319,10 @@ export function CaregiverView({ currentUser, onLogout }) {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="card-btn btn-primary"
+                    className="form-submit-btn"
                   >
-                    {isSubmitting ? 'Creating...' : 'Create Patient in MongoDB'}
+                    <Plus size={16} />
+                    <span>{isSubmitting ? 'Creating...' : 'Create Patient'}</span>
                   </button>
                 </div>
               </form>
@@ -1354,11 +1358,10 @@ export function CaregiverView({ currentUser, onLogout }) {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="card-btn btn-primary"
-                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                    className="form-submit-btn"
                   >
-                    <span>{isSubmitting ? 'Connecting...' : 'Link Patient to My Account'}</span>
                     <LinkIcon size={15} />
+                    <span>{isSubmitting ? 'Connecting...' : 'Link Patient'}</span>
                   </button>
                 </div>
               </form>

@@ -214,7 +214,7 @@ Rules:
 }}
 """
             def call_gemini():
-                model_candidates = ["gemini-3.6-flash", "gemini-flash-latest", "gemini-3.5-flash"]
+                model_candidates = ["gemini-3.1-flash-lite", "gemini-3.6-flash", "gemini-flash-latest", "gemini-3.5-flash"]
                 for candidate in model_candidates:
                     try:
                         resp = client.models.generate_content(
@@ -229,7 +229,7 @@ Rules:
 
             import threading
 
-            def _run_with_timeout(func, timeout=5):
+            def _run_with_timeout(func, timeout=12):
                 res = [None]
                 err = [None]
                 def worker():
@@ -247,7 +247,7 @@ Rules:
                     raise err[0]
                 return res[0]
 
-            response = _run_with_timeout(call_gemini, timeout=5)
+            response = _run_with_timeout(call_gemini, timeout=12)
 
             if response and hasattr(response, "text") and response.text:
                 text = response.text.strip()

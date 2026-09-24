@@ -38,7 +38,7 @@ export function AuthView({ onAuthSuccess }) {
         // Register API call: POST /api/auth/register
         await api.register(name, email, password, role, caregiverEmail);
 
-        setSuccessMsg('Account created successfully in MongoDB! Logging you in...');
+        setSuccessMsg('Account created successfully! Logging you in...');
 
         // Auto-login after registration
         const loginRes = await api.login(email, password);
@@ -285,7 +285,7 @@ export function AuthView({ onAuthSuccess }) {
 
         <p style={{ fontSize: '0.8rem', color: '#6B7280', textAlign: 'center', margin: '2px 0 10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
           <Lightbulb size={14} color="#F59E0B" />
-          <span>To save real records to MongoDB, submit the form above.</span>
+          <span>To register your account, submit the form above.</span>
         </p>
 
         {/* Quick Helper and Demo Buttons */}
@@ -298,7 +298,7 @@ export function AuthView({ onAuthSuccess }) {
               setEmail('pankaj.kumar@example.com');
               setPassword('SecretPass123!');
               setErrorMsg('');
-              setSuccessMsg('Filled test user! Click "Create Account" above to send to MongoDB.');
+              setSuccessMsg('Filled test user! Click "Create Account" above to submit.');
             }}
             className="demo-pill-btn"
             style={{ background: '#F0FDF4', color: '#166534', borderColor: '#BBF7D0' }}
@@ -316,7 +316,7 @@ export function AuthView({ onAuthSuccess }) {
               setEmail('dr.rajesh@example.com');
               setPassword('DoctorPass123!');
               setErrorMsg('');
-              setSuccessMsg('Filled Caregiver details! Click "Create Account" above to register in MongoDB.');
+              setSuccessMsg('Filled Caregiver details! Click "Create Account" above to submit.');
             }}
             className="demo-pill-btn"
             style={{ background: '#EFF6FF', color: '#1E40AF', borderColor: '#BFDBFE' }}
