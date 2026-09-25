@@ -4040,3 +4040,247 @@ select.form-input {
   box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.25);
 }
 
+/* ========================================================
+   CAREGIVER COGNITIVE SCORE ALERT (<30%) STYLES
+======================================================== */
+
+.accuracy-pill.critical {
+  background: #FEE2E2;
+  color: #DC2626;
+  border: 1px solid #FCA5A5;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.row-low-score-alert {
+  background: #FFF1F2 !important;
+}
+
+.row-low-score-alert:hover {
+  background: #FFE4E6 !important;
+}
+
+/* Caregiver Header Notification Bell */
+.caregiver-bell-btn {
+  position: relative;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  border-radius: 9999px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.caregiver-bell-btn:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+  transform: translateY(-1px);
+}
+
+.caregiver-bell-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  background: #DC2626;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 1px 4px rgba(220, 38, 38, 0.35);
+}
+
+/* Alerts Popover Menu */
+.caregiver-alerts-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 320px;
+  max-width: 90vw;
+  background: #FFFFFF;
+  border: 1px solid #FECACA;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  overflow: hidden;
+}
+
+.alerts-popover-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #FEF2F2;
+  border-bottom: 1px solid #FECACA;
+}
+
+.alerts-close-btn {
+  background: transparent;
+  border: none;
+  color: #991B1B;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+}
+
+.alerts-popover-body {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.alerts-popover-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #F1F5F9;
+  transition: background 0.15s ease;
+}
+
+.alerts-popover-item:last-child {
+  border-bottom: none;
+}
+
+.alerts-popover-item:hover {
+  background: #F8FAFC;
+}
+
+.alert-popover-ack-btn {
+  background: #FEE2E2;
+  color: #DC2626;
+  border: 1px solid #FCA5A5;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.alert-popover-ack-btn:hover {
+  background: #DC2626;
+  color: #FFFFFF;
+}
+
+/* Caregiver Dashboard Overview Alert Banner Card */
+.caregiver-alert-card {
+  background: #FEF2F2;
+  border: 1.5px solid #F87171;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.08);
+}
+
+.alert-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.alert-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.alert-title-wrap h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #991B1B;
+}
+
+.alert-icon-pulse {
+  animation: alertPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes alertPulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.alert-pill-badge {
+  background: #DC2626;
+  color: #FFFFFF;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.alert-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.alert-entry-item {
+  background: #FFFFFF;
+  border: 1px solid #FECACA;
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.alert-entry-info {
+  flex: 1;
+}
+
+.alert-entry-text {
+  margin: 0;
+  font-size: 13.5px;
+  color: #1E293B;
+  line-height: 1.4;
+}
+
+.alert-entry-timestamp {
+  display: block;
+  font-size: 11.5px;
+  color: #64748B;
+  margin-top: 4px;
+}
+
+.alert-acknowledge-btn {
+  background: #DC2626;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+  flex-shrink: 0;
+}
+
+.alert-acknowledge-btn:hover {
+  background: #B91C1C;
+  transform: translateY(-1px);
+}
+
+

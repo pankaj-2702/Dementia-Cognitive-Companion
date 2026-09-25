@@ -426,6 +426,30 @@ export const api = {
     }
   },
 
+  // Get all alerts for the caregiver (< 30% cognitive score alerts)
+  getCaregiverAlerts: async () => {
+    try {
+      const data = await fetchWithAuth(`${API_BASE}/caregiver/alerts`);
+      return data?.alerts || [];
+    } catch (err) {
+      console.warn('Alerts fetch error:', err.message);
+      return [];
+    }
+  },
+
+  // Dismiss / acknowledge a caregiver alert
+  dismissCaregiverAlert: async (alertId) => {
+    try {
+      const data = await fetchWithAuth(`${API_BASE}/caregiver/alerts/${alertId}/dismiss`, {
+        method: 'POST'
+      });
+      return data;
+    } catch (err) {
+      console.warn('Alert dismiss error:', err.message);
+      throw err;
+    }
+  },
+
   // Get all patients assigned to this caregiver
   getCaregiverPatients: async () => {
     try {

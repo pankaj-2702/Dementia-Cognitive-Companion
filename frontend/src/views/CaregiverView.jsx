@@ -41,6 +41,38 @@ export function CaregiverView({ currentUser, onLogout }) {
   const [actionError, setActionError] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Cognitive Alerts (< 30% Score)
+  const [caregiverAlerts, setCaregiverAlerts] = useState([]);
+  const [showAlertsDropdown, setShowAlertsDropdown] = useState(false);
+
+  // Fetch all caregiver alerts (< 30% score)
+  const loadAlerts = async () => {
+    try {
+      const res = await api.getCaregiverAlerts();
+      setCaregiverAlerts(Array.isArray(res) ? res : []);
+    } catch (err) {
+      console.warn('Alerts fetch error:', err);
+    }
+  };
+
+  // Dismiss / acknowledge an alert
+  const handleDismissAlert = async (alertId) => {
+    try {
+      await api.dismissCaregiverAlert(alertId);
+      setCaregiverAlerts((prev) => prev.filter((a) => a.id !== alertId));
+      if (selectedPatientId) {
+        refreshCurrentData(false);
+      }
+    } catch (err) {
+      console.error('Failed to dismiss alert:', err);
+    }
+  };
+
+  // Patient-specific alerts (<30% score)
+  const patientAlerts = (dashboardData?.alerts?.items && dashboardData.alerts.items.length > 0)
+    ? dashboardData.alerts.items
+    : caregiverAlerts.filter((a) => a.patient_id === selectedPatientId);
+
   // Close drawer on Escape key
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -107,6 +139,7 @@ export function CaregiverView({ currentUser, onLogout }) {
         setSelectedPatientId('');
         setDashboardData(null);
       }
+      loadAlerts();
     } catch (err) {
       console.error('Failed to load caregiver patients:', err);
     } finally {
@@ -121,6 +154,7 @@ export function CaregiverView({ currentUser, onLogout }) {
     try {
       const data = await api.getCaregiverDashboard(selectedPatientId);
       if (data) setDashboardData(data);
+      loadAlerts();
     } catch (err) {
       console.warn('Dashboard live refresh:', err.message);
     } finally {
@@ -142,6 +176,7 @@ export function CaregiverView({ currentUser, onLogout }) {
         const data = await api.getCaregiverDashboard(selectedPatientId);
         if (!isMounted) return;
         setDashboardData(data);
+        loadAlerts();
 
         // Pre-fill patient edit form on primary load
         if (data?.patient && showSpinner) {
@@ -168,6 +203,7 @@ export function CaregiverView({ currentUser, onLogout }) {
     // Auto-poll every 15s so game results and activities played by patient update dynamically
     const pollInterval = setInterval(() => {
       loadDashboard(false);
+      loadAlerts();
     }, 15000);
 
     return () => {
@@ -447,8 +483,78 @@ export function CaregiverView({ currentUser, onLogout }) {
             </div>
           </div>
 
-          {/* Right: Caregiver Name Pill (opens menu on click) */}
-          <div className="caregiver-user-actions">
+          {/* Right: Notification Bell & Caregiver Name Pill */}
+          <div className="caregiver-user-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => setShowAlertsDropdown(!showAlertsDropdown)}
+                className="caregiver-bell-btn"
+                aria-label="View Cognitive Alerts"
+                title={caregiverAlerts.length > 0 ? `${caregiverAlerts.length} cognitive alerts (<30%)` : 'No cognitive alerts'}
+              >
+                <BellIcon />
+                {caregiverAlerts.length > 0 && (
+                  <span className="caregiver-bell-badge">
+                    {caregiverAlerts.length}
+                  </span>
+                )}
+              </button>
+
+              {/* Alerts Dropdown Popover */}
+              {showAlertsDropdown && (
+                <div className="caregiver-alerts-popover animate-fade-in">
+                  <div className="alerts-popover-header">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <AlertTriangle size={16} color="#DC2626" />
+                      <h4 style={{ margin: 0, fontSize: '13.5px', fontWeight: 700, color: '#991B1B' }}>
+                        Low Score Alerts (&lt;30%)
+                      </h4>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowAlertsDropdown(false)}
+                      className="alerts-close-btn"
+                      aria-label="Close Alerts"
+                    >
+                      <X size={15} />
+                    </button>
+                  </div>
+
+                  <div className="alerts-popover-body">
+                    {caregiverAlerts.length === 0 ? (
+                      <p style={{ margin: '14px', color: '#64748B', fontSize: '13px', textAlign: 'center' }}>
+                        No cognitive alerts. All patient scores are 30% or higher.
+                      </p>
+                    ) : (
+                      caregiverAlerts.map((alt) => (
+                        <div key={alt.id} className="alerts-popover-item">
+                          <div>
+                            <div style={{ fontWeight: 600, fontSize: '13px', color: '#0F172A' }}>
+                              {alt.patient_name}: <span style={{ color: '#DC2626', fontWeight: 700 }}>{alt.score}% Score</span>
+                            </div>
+                            <div style={{ fontSize: '12px', color: '#475569', marginTop: '2px' }}>
+                              Scored below 30% in <strong>{alt.game_id}</strong>
+                            </div>
+                            <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '4px' }}>
+                              {alt.created_at ? new Date(alt.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recently'}
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleDismissAlert(alt.id)}
+                            className="alert-popover-ack-btn"
+                          >
+                            Dismiss
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <button
               onClick={() => setIsMenuOpen(true)}
               className="caregiver-name-btn"
@@ -731,6 +837,41 @@ export function CaregiverView({ currentUser, onLogout }) {
                       </div>
                     </div>
 
+                    {/* Patient Low-Score Alert Banner (< 30%) */}
+                    {patientAlerts.length > 0 && (
+                      <div className="caregiver-alert-card animate-fade-in">
+                        <div className="alert-card-header">
+                          <div className="alert-title-wrap">
+                            <AlertTriangle size={20} color="#DC2626" className="alert-icon-pulse" />
+                            <h4>Attention Required: Low Cognitive Score Alert (&lt; 30%)</h4>
+                          </div>
+                          <span className="alert-pill-badge">{patientAlerts.length} Active Alert{patientAlerts.length > 1 ? 's' : ''}</span>
+                        </div>
+                        <div className="alert-items-list">
+                          {patientAlerts.map((alert) => (
+                            <div key={alert.id} className="alert-entry-item">
+                              <div className="alert-entry-info">
+                                <p className="alert-entry-text">
+                                  <strong>{alert.patient_name || selectedPatient?.preferred_name || 'Patient'}</strong> scored{' '}
+                                  <strong style={{ color: '#DC2626', background: '#FEE2E2', padding: '1px 6px', borderRadius: '4px' }}>{alert.score}%</strong> on <em>{alert.game_id}</em> (below 30% safety threshold). Caregiver check-in recommended.
+                                </p>
+                                <span className="alert-entry-timestamp">
+                                  {alert.created_at ? new Date(alert.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recently'}
+                                </span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleDismissAlert(alert.id)}
+                                className="alert-acknowledge-btn"
+                              >
+                                Acknowledge &amp; Dismiss
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {/* Vitals & Cognitive Stat Cards */}
                     <div className="caregiver-metrics-grid">
                       <div className="metric-box bg-purple">
@@ -784,20 +925,31 @@ export function CaregiverView({ currentUser, onLogout }) {
                               </tr>
                             </thead>
                             <tbody>
-                              {(dashboardData?.games?.results || []).map((r) => (
-                                <tr key={r.id || `${r.game_id}-${r.created_at}`}>
-                                  <td><strong>{r.game_id}</strong></td>
-                                  <td>{r.score ?? 0}</td>
-                                  <td>
-                                    <span className={`accuracy-pill ${(r.accuracy ?? 0) >= 80 ? 'high' : (r.accuracy ?? 0) >= 50 ? 'mid' : 'low'}`}>
-                                      {r.accuracy != null ? `${r.accuracy}%` : 'N/A'}
-                                    </span>
-                                  </td>
-                                  <td>{r.time_taken ?? 0}s</td>
-                                  <td><span className="diff-badge">{r.difficulty || 'Easy'}</span></td>
-                                  <td>{r.created_at ? new Date(r.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Today'}</td>
-                                </tr>
-                              ))}
+                              {(dashboardData?.games?.results || []).map((r) => {
+                                const isLowScore = (r.score != null && r.score < 30) || (r.accuracy != null && r.accuracy < 30);
+                                return (
+                                  <tr key={r.id || `${r.game_id}-${r.created_at}`} className={isLowScore ? 'row-low-score-alert' : ''}>
+                                    <td><strong>{r.game_id}</strong></td>
+                                    <td>
+                                      <strong>{r.score ?? 0}</strong>
+                                      {isLowScore && (
+                                        <span style={{ marginLeft: '6px', color: '#DC2626', fontSize: '11px', fontWeight: 700 }}>
+                                          ⚠️ &lt;30%
+                                        </span>
+                                      )}
+                                    </td>
+                                    <td>
+                                      <span className={`accuracy-pill ${isLowScore ? 'critical' : (r.accuracy ?? 0) >= 80 ? 'high' : (r.accuracy ?? 0) >= 50 ? 'mid' : 'low'}`}>
+                                        {isLowScore && '⚠️ '}
+                                        {r.accuracy != null ? `${r.accuracy}%` : 'N/A'}
+                                      </span>
+                                    </td>
+                                    <td>{r.time_taken ?? 0}s</td>
+                                    <td><span className="diff-badge">{r.difficulty || 'Easy'}</span></td>
+                                    <td>{r.created_at ? new Date(r.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Today'}</td>
+                                  </tr>
+                                );
+                              })}
                             </tbody>
                           </table>
                         </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { AlertTriangle, Check, User, Stethoscope, Link as LinkIcon, Eye, EyeOff, Lightbulb, Edit3 } from 'lucide-react';
+import { AlertTriangle, Check, User, Stethoscope, Link as LinkIcon, Eye, EyeOff } from 'lucide-react';
 import { LogoIcon, ArrowRightIcon } from '../components/Icons';
-import { api, storage, DEFAULT_PATIENT } from '../api';
+import { api, storage } from '../api';
 
 export function AuthView({ onAuthSuccess }) {
   const [mode, setMode] = useState('login'); // 'login' | 'register'
@@ -68,32 +68,6 @@ export function AuthView({ onAuthSuccess }) {
     }
   };
 
-  // Quick Demo Logins for instant evaluation
-  const handleQuickDemoLogin = (demoRole) => {
-    if (demoRole === 'patient') {
-      const demoUser = {
-        id: 'user_maya_01',
-        name: 'Maya Sharma',
-        preferred_name: 'Maya Ji',
-        email: 'maya@smritiroots.org',
-        role: 'patient'
-      };
-      storage.setToken('mock_jwt_token_maya_ji');
-      storage.setUser(demoUser);
-      storage.setPatient(DEFAULT_PATIENT);
-      onAuthSuccess(demoUser);
-    } else {
-      const demoUser = {
-        id: 'user_rajesh_caregiver',
-        name: 'Dr. Rajesh Sharma',
-        email: 'dr.rajesh@smritiroots.org',
-        role: 'caregiver'
-      };
-      storage.setToken('mock_jwt_token_caregiver');
-      storage.setUser(demoUser);
-      onAuthSuccess(demoUser);
-    }
-  };
 
   return (
     <div className="auth-view-container animate-fade-in">
@@ -277,72 +251,6 @@ export function AuthView({ onAuthSuccess }) {
             <ArrowRightIcon className="btn-arrow-icon" />
           </button>
         </form>
-
-        {/* Divider */}
-        <div className="auth-divider">
-          <span>OR QUICK ACTIONS</span>
-        </div>
-
-        <p style={{ fontSize: '0.8rem', color: '#6B7280', textAlign: 'center', margin: '2px 0 10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-          <Lightbulb size={14} color="#F59E0B" />
-          <span>To register your account, submit the form above.</span>
-        </p>
-
-        {/* Quick Helper and Demo Buttons */}
-        <div className="quick-demo-buttons">
-          <button
-            type="button"
-            onClick={() => {
-              setMode('register');
-              setName('Pankaj Kumar');
-              setEmail('pankaj.kumar@example.com');
-              setPassword('SecretPass123!');
-              setErrorMsg('');
-              setSuccessMsg('Filled test user! Click "Create Account" above to submit.');
-            }}
-            className="demo-pill-btn"
-            style={{ background: '#F0FDF4', color: '#166534', borderColor: '#BBF7D0' }}
-          >
-            <span style={{ display: 'inline-flex', alignItems: 'center' }}><Edit3 size={15} /></span>
-            <span>Fill Form with <strong>Test User</strong></span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setMode('register');
-              setRole('caregiver');
-              setName('Dr. Rajesh Sharma');
-              setEmail('dr.rajesh@example.com');
-              setPassword('DoctorPass123!');
-              setErrorMsg('');
-              setSuccessMsg('Filled Caregiver details! Click "Create Account" above to submit.');
-            }}
-            className="demo-pill-btn"
-            style={{ background: '#EFF6FF', color: '#1E40AF', borderColor: '#BFDBFE' }}
-          >
-            <span style={{ display: 'inline-flex', alignItems: 'center' }}><Stethoscope size={15} /></span>
-            <span>Fill Form with <strong>Caregiver (Dr. Rajesh)</strong></span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleQuickDemoLogin('patient')}
-            className="demo-pill-btn patient"
-          >
-            <span style={{ display: 'inline-flex', alignItems: 'center' }}><User size={15} /></span>
-            <span>Offline Preview: <strong>Maya Ji (Patient)</strong></span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleQuickDemoLogin('caregiver')}
-            className="demo-pill-btn caregiver"
-          >
-            <span style={{ display: 'inline-flex', alignItems: 'center' }}><Stethoscope size={15} /></span>
-            <span>Offline Preview: <strong>Dr. Rajesh (Caregiver)</strong></span>
-          </button>
-        </div>
       </div>
     </div>
   );

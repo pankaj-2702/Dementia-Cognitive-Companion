@@ -348,6 +348,30 @@ def submit_game():
     )
 
     # --------------------------------------------------------
+    # Check if score < 30%: Trigger Caregiver Alert
+    # --------------------------------------------------------
+    alert_triggered = False
+    if score < 30 or accuracy < 30:
+        try:
+            from app.models.patient_model import find_patient_by_id, find_patient_by_user_id
+            from app.models.alert_model import create_alert
+            pat = find_patient_by_id(patient_id) or find_patient_by_user_id(patient_id)
+            if pat and pat.get("caregiver_id"):
+                p_name = pat.get("preferred_name") or "Patient"
+                create_alert(
+                    caregiver_id=pat["caregiver_id"],
+                    patient_id=pat["_id"],
+                    patient_name=p_name,
+                    game_id=game_id,
+                    score=score,
+                    accuracy=accuracy,
+                    message=f"Cognitive Alert: {p_name} scored {score}% in '{game_id}' (below 30% safety threshold). Caregiver check-in recommended."
+                )
+                alert_triggered = True
+        except Exception as alert_err:
+            print(f"[GameSessionRoutes] Alert dispatch error: {alert_err}")
+
+    # --------------------------------------------------------
     # Mark session completed
     # --------------------------------------------------------
 
@@ -369,6 +393,7 @@ def submit_game():
             "score": score,
             "difficulty": difficulty,
             "next_difficulty": next_difficulty,
-            "time_taken": time_taken
+            "time_taken": time_taken,
+            "alert_triggered": alert_triggered
         }
     }, 201

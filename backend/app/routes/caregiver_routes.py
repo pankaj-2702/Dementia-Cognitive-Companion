@@ -176,6 +176,30 @@ def get_dashboard(patient_id):
                 "image_url": memory.get("image_url")
             })
 
+        # ==========================================
+        # ALERTS (< 30% Score Cognitive Alerts)
+        # ==========================================
+
+        from app.models.alert_model import find_alerts_by_patient
+        raw_alerts = find_alerts_by_patient(actual_patient_id)
+
+        alert_list = []
+        for a in raw_alerts:
+            created_at_val = a.get("created_at")
+            created_at_str = created_at_val.isoformat() if hasattr(created_at_val, "isoformat") else str(created_at_val or "")
+            alert_list.append({
+                "id": str(a["_id"]),
+                "patient_id": str(a.get("patient_id", "")),
+                "patient_name": a.get("patient_name", ""),
+                "game_id": a.get("game_id", ""),
+                "score": a.get("score", 0),
+                "accuracy": a.get("accuracy", 0),
+                "message": a.get("message", ""),
+                "severity": a.get("severity", "warning"),
+                "read": a.get("read", False),
+                "created_at": created_at_str
+            })
+
     except Exception as e:
         return {
             "status": "error",
@@ -243,6 +267,19 @@ def get_dashboard(patient_id):
                 "count": len(memory_list),
 
                 "items": memory_list
+            },
+
+            # ----------------------------------
+            # Alerts (< 30% Score)
+            # ----------------------------------
+
+            "alerts": {
+
+                "count": len(alert_list),
+
+                "unread_count": len([a for a in alert_list if not a.get("read")]),
+
+                "items": alert_list
             }
         }
 
@@ -332,3 +369,69 @@ def link_existing_patient():
             "email": email
         }
     }, 200
+
+
+# ==========================================
+# GET CAREGIVER ALERTS
+# ==========================================
+
+@caregiver_bp.route("/alerts", methods=["GET"])
+@token_required
+def get_caregiver_alerts():
+    if g.user["role"] != "caregiver":
+        return {
+            "status": "error",
+            "message": "Only caregivers can access alerts"
+        }, 403
+
+    from app.models.alert_model import find_alerts_by_caregiver
+    raw_alerts = find_alerts_by_caregiver(g.user["user_id"])
+
+    alerts = []
+    for a in raw_alerts:
+        created_at_val = a.get("created_at")
+        created_at_str = created_at_val.isoformat() if hasattr(created_at_val, "isoformat") else str(created_at_val or "")
+        alerts.append({
+            "id": str(a["_id"]),
+            "patient_id": str(a.get("patient_id", "")),
+            "patient_name": a.get("patient_name", ""),
+            "game_id": a.get("game_id", ""),
+            "score": a.get("score", 0),
+            "accuracy": a.get("accuracy", 0),
+            "message": a.get("message", ""),
+            "severity": a.get("severity", "warning"),
+            "read": a.get("read", False),
+            "created_at": created_at_str
+        })
+
+    return {
+        "status": "success",
+        "alerts": alerts,
+        "unread_count": len([a for a in alerts if not a.get("read")])
+    }, 200
+
+
+# ==========================================
+# DISMISS CAREGIVER ALERT
+# ==========================================
+
+@caregiver_bp.route("/alerts/<alert_id>/dismiss", methods=["POST"])
+@token_required
+def dismiss_caregiver_alert(alert_id):
+    if g.user["role"] != "caregiver":
+        return {
+            "status": "error",
+            "message": "Only caregivers can dismiss alerts"
+        }, 403
+
+    from app.models.alert_model import dismiss_alert
+    success = dismiss_alert(alert_id)
+    if success:
+        return {
+            "status": "success",
+            "message": "Alert acknowledged and dismissed"
+        }, 200
+    return {
+        "status": "error",
+        "message": "Alert not found or already dismissed"
+    }, 404
